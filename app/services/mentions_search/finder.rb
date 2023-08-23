@@ -2,10 +2,9 @@
 
 module MentionsSearch
   class Finder
-    def initialize(leprosorium:, text:, strategy_resolver: nil, symbols_config: nil)
-      @leprosorium = leprosorium
+    def initialize(text:, strategy_resolver: nil, symbols_config: nil)
       @text = text
-      @strategy_resolver = strategy_resolver || MentionsSearch::StrategyResolver.new(leprosorium: leprosorium)
+      @strategy_resolver = strategy_resolver || MentionsSearch::StrategyResolver.new
       @symbols_config = symbols_config || SymbolsConfig.new
       @strategies = []
     end
@@ -17,7 +16,7 @@ module MentionsSearch
 
     private
 
-    attr_reader :leprosorium, :strategies, :symbols_config, :text
+    attr_reader :strategies, :symbols_config, :text
 
     def find_or_initialize_strategy(entity)
       strategy_klass = @strategy_resolver.call(entity)
@@ -25,7 +24,7 @@ module MentionsSearch
     end
 
     def initialize_strategy(strategy_klass)
-      strategy = strategy_klass.new(leprosorium: leprosorium, text: text, symbols_config: symbols_config)
+      strategy = strategy_klass.new(text: text, symbols_config: symbols_config)
       strategies.append(strategy)
       strategy
     end

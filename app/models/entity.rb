@@ -5,8 +5,14 @@ class Entity
 
   alias stemmable? stemmable
 
-  def self.all
+  class << self
+    def all
+      Leprosorium.entities
+    end
 
+    def find(id)
+      all.find { |e| e.id == id }
+    end
   end
 
   def initialize(id:, disclaimer_id:, aliases:, stemmable:)
@@ -14,5 +20,13 @@ class Entity
     @disclaimer_id = disclaimer_id
     @aliases = aliases
     @stemmable = stemmable
+  end
+
+  def disclaimer
+    Disclaimer.find(disclaimer_id)
+  end
+
+  def disclaimer_text
+    disclaimer.text
   end
 end

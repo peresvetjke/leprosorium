@@ -3,8 +3,19 @@
 module MentionsSearch
   module Strategies
     class Plain < Base
-      def find_mention(entity_alias)
-        text[entity_alias]
+      # @param entity_alias [String]
+      # @return [Mention, NilClass]
+      def find_alias_mentions!(entity_alias)
+        mentions = []
+        offset = 0
+
+        while (from = text.index(entity_alias, offset))
+          to = from + entity_alias.length - 1
+          mentions << build_mention(from: from, to: to, entity_alias: entity_alias)
+          offset = to
+        end
+
+        mentions
       end
     end
   end

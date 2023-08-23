@@ -1,24 +1,17 @@
 require 'rails_helper'
 
-RSpec.describe Disclaimer::Marker do
-  subject { described_class.new(leprosorium: leprosorium).call(text) }
+RSpec.describe DisclaimerMarker do
+  include_context 'leprosorium'
 
-  let(:finder) { instance_double(MentionsSearch::Finder) }
+  subject { described_class.new.call(text) }
+
   let(:text) { 'Земфира Рамазанова, текст, Земфира' }
-  let(:mentions) { ['Земфира Рамазанова', 'Земфира'] }
-  let(:leprosorium) { build(:leprosorium, disclaimer_types: disclaimer_types, entities: [entity]) }
-  let(:entity) do
-    {
-      disclaimer_type: :inoagentka,
-      aliases: ['Земфира', 'Земфирой', 'Земфира Рамазанова', 'Земфирой Рамазановой'],
-      stemmable: false
-    }
-  end
-  let(:disclaimer_types) { { inoagentka: disclaimer } }
-  let(:disclaimer) { 'признана иностранным агентом в РФ' }
-  let(:result) { "Земфира Рамазанова (#{disclaimer}), текст, Земфира" }
+  # let(:mentions) { ['Земфира Рамазанова', 'Земфира'] }
+  # let(:disclaimer_types) { { inoagentka: disclaimer } }
+  # let(:disclaimer) { 'признана иностранным агентом в РФ' }
+  let(:result) { "Земфира Рамазанова (#{zemfira.disclaimer_text}), текст, Земфира" }
 
-  before { allow(finder).to receive(:call).with(entity).and_return(mentions) }
+  # before { allow(finder).to receive(:call).with(entity).and_return(mentions) }
 
   it 'returns text with disclaimers' do
     is_expected.to eq(result)

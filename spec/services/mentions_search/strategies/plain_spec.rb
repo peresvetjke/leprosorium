@@ -1,19 +1,26 @@
 require 'rails_helper'
 
 RSpec.describe MentionsSearch::Strategies::Plain do
-  subject { described_class.new(leprosorium: leprosorium, text: text).find_mentions(entity) }
+  include_context 'leprosorium'
 
-  let(:leprosorium) { Leprosorium.new(entities: [entity], disclaimer_types: {}) }
-  let(:entity) { { aliases: %w[Монетка Монеточку Монеточке] } }
-  let(:text) { 'Монеточке, текст, текст, Монетка, Монетка' }
-  let(:result) { %w[Монеточке Монетка] }
+  subject { described_class.new(text: text).find_mentions(zemfira) }
 
-  it { is_expected.to eq result }
+  let(:text) { 'Земфире, текст, текст, Земфира, Земфира' }
+
+  it 'returns mentions', aggregate_failures: true do
+    is_expected.to all(be_a(Mention))
+    expect(subject.map(&:as_json)).to match_array(
+      [
+        { 'from' => 0, 'match' => 'Земфире', 'to' => 6, 'entity_alias' => 'Земфире' },
+        { 'from' => 23, 'match' => 'Земфира', 'to' => 29, 'entity_alias' => 'Земфира' },
+        { 'from' => 32, 'match' => 'Земфира', 'to' => 38, 'entity_alias' => 'Земфира' }
+      ]
+    )
+  end
 
   context 'when no match' do
     let(:text) { 'текст, текст' }
-    let(:result) { %w[] }
 
-    it { is_expected.to eq result }
+    it { is_expected.to eq([]) }
   end
 end

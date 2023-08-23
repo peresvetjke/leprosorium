@@ -5,10 +5,21 @@ class Leprosorium
 
   # @param entities [Hash]
   # @param disclaimer_types [Hash]
-  def initialize(entities:, disclaimer_types:)
-    @entities = entities
-    @disclaimer_types = disclaimer_types
+  # def initialize(entities:, disclaimer_types:)
+  #   @entities = entities
+  #   @disclaimer_types = disclaimer_types
+  # end
+
+  class << self
+    def entities
+      raise NotImplementedError
+    end
+
+    def disclaimers
+      raise NotImplementedError
+    end
   end
+
 
   # # TODO: refactor. Probably we don't want to revert hash every time.
   # # @param entity_alias [String]
