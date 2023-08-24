@@ -18,24 +18,36 @@ module MentionsSearch
       # @param entity_alias [String]
       # @return [Array<Mention>]
       def find_alias_mentions(entity_alias)
-        mentions = []
+        phrase_match_positions(entity_alias).map { |i| build_mention_by_phrase_index(entity_alias, i) }
+      end
+
+      # @param entity_alias [String]
+      # @return [Array<Integer]
+      def phrase_match_positions(entity_alias)
+        stemmed_text.list_indexes(stemmed_alias(entity_alias))
+      end
+
+      # @param entity_alias [String]
+      # @param phrase_index [Integer]
+      # @return [Mention]
+      def build_mention_by_phrase_index(entity_alias, phrase_index)
+        from = phrase_index.zero? ? 0 : splitted_text[0..(phrase_index - 1)].join.length
+        to = from + match_length(entity_alias, phrase_index) - 1
+        build_mention(from: from, to: to, entity_alias: entity_alias)
+      end
+
+      # @param entity_alias [String]
+      # @param phrase_index [Integer]
+      # @return [Integer]
+      def match_length(entity_alias, phrase_index)
+        splitted_text[phrase_index..(phrase_index + stemmed_alias(entity_alias).size - 1)].join.length
+      end
+
+      # @param entity_alias [String]
+      # @return [Array<String>]
+      def stemmed_alias(entity_alias)
         splitted_alias = split(entity_alias)
-        alias_words_count = splitted_alias.size
-        stemmed_alias = splitted_alias.map { |w| stems[w] || w }
-        # Avoid time-consuming search process for irrelevant cases.
-        return [] unless stemmed_text.include?(stemmed_alias.first)
-
-        # TODO: Refactor this beautiful brute force logic some day.
-        stemmed_text.each_cons(alias_words_count).with_index do |stemmed_text_part, i|
-          next unless stemmed_text_part == stemmed_alias
-
-          match_length = splitted_text[i..(i + alias_words_count - 1)].join.length
-          from = i.zero? ? 0 : splitted_text[0..(i - 1)].join.length
-          to = from + match_length - 1
-
-          mentions << build_mention(from: from, to: to, entity_alias: entity_alias)
-        end
-        mentions
+        stem(splitted_alias)
       end
 
       # @return [Hash]
@@ -48,10 +60,13 @@ module MentionsSearch
 
       # @return [Array<String>]
       def stemmed_text
-        @stemmed_text ||= splitted_text.map do |w|
-          word = w.delete(quotes)
-          stems[word] || word
-        end
+        @stemmed_text ||= stem(splitted_text)
+      end
+
+      # @param text [String]
+      # @return [Array<String>]
+      def stem(text)
+        text.map { |w| stems[w] || w }
       end
 
       # @return [Array<String>]
