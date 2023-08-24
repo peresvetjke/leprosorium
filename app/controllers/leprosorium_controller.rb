@@ -1,10 +1,4 @@
 class LeprosoriumController < ApplicationController
-  # helper LeprosoriumHelper
-
-  def entities
-    render json: Leprosorium.entities.as_json
-  end
-
   def index; end
 
   def markup

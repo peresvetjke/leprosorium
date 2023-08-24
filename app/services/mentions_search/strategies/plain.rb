@@ -4,8 +4,8 @@ module MentionsSearch
   module Strategies
     class Plain < Base
       # @param entity_alias [String]
-      # @return [Mention, NilClass]
-      def find_alias_mentions!(entity_alias)
+      # @return [Array<Mention>]
+      def find_alias_mentions(entity_alias)
         mentions = []
         offset = 0
 

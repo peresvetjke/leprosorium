@@ -3,6 +3,7 @@
 module MentionsSearch
   module Strategies
     class Stem < Base
+      # @param options [Hash]
       def initialize(options)
         super(**options.except(:stemmer))
         @stemmer = options[:stemmer] || Stemmer::Natasha.new
@@ -14,7 +15,9 @@ module MentionsSearch
 
       attr_reader :symbols_config
 
-      def find_alias_mentions!(entity_alias)
+      # @param entity_alias [String]
+      # @return [Array<Mention>]
+      def find_alias_mentions(entity_alias)
         mentions = []
         splitted_alias = split(entity_alias)
         alias_words_count = splitted_alias.size
@@ -31,6 +34,7 @@ module MentionsSearch
         mentions
       end
 
+      # @return [Hash]
       def stems
         @stems ||= begin
           stemmable_aliases = Leprosorium.entities.select(&:stemmable?).map(&:aliases).flatten
@@ -38,6 +42,7 @@ module MentionsSearch
         end
       end
 
+      # @return [Array<String>]
       def stemmed_text
         @stemmed_text ||= splitted_text.map do |w|
           word = w.delete(quotes)
@@ -45,10 +50,12 @@ module MentionsSearch
         end
       end
 
+      # @return [Array<String>]
       def splitted_text
         @splitted_text ||= split(text)
       end
 
+      # @return [Array<String>]
       def split(text)
         text.scan(/[#{letters}]+|[^#{letters}]|#{space}+/i)
       end

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Dummy leprosorium config.
-if Rails.env.dev?
+unless Rails.env.test?
   entities = [
     {
       id: 1,
