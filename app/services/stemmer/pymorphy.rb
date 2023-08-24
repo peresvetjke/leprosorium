@@ -3,5 +3,5 @@
 require 'pycall'
 
 module Stemmer
-  class Natasha < Base; end
+  class Pymorphy < Base; end
 end

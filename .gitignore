@@ -40,4 +40,4 @@ yarn-debug.log*
 .yarn-integrity
 
 # Ignore python compiled byte-code
-lib/__pycache__/
+lib/python/__pycache__/

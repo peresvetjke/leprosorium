@@ -6,7 +6,7 @@ module MentionsSearch
       # @param options [Hash]
       def initialize(options)
         super(**options.except(:stemmer))
-        @stemmer = options[:stemmer] || Stemmer::Natasha.new
+        @stemmer = options[:stemmer] || Stemmer::Pymorphy.new
       end
 
       private
