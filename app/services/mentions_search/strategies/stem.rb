@@ -22,6 +22,10 @@ module MentionsSearch
         splitted_alias = split(entity_alias)
         alias_words_count = splitted_alias.size
         stemmed_alias = splitted_alias.map { |w| stems[w] || w }
+        # Avoid time-consuming search process for irrelevant cases.
+        return [] unless stemmed_text.include?(stemmed_alias.first)
+
+        # TODO: Refactor this beautiful brute force logic some day.
         stemmed_text.each_cons(alias_words_count).with_index do |stemmed_text_part, i|
           next unless stemmed_text_part == stemmed_alias
 
@@ -37,7 +41,7 @@ module MentionsSearch
       # @return [Hash]
       def stems
         @stems ||= begin
-          stemmable_aliases = Leprosorium.entities.select(&:stemmable?).map(&:aliases).flatten
+          stemmable_aliases = Entity.all.select(&:stemmable?).map(&:aliases).flatten
           @stemmer.call(stemmable_aliases.append(text))
         end
       end

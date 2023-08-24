@@ -11,17 +11,21 @@ module MentionsSearch
       end
 
       # @param entity [Entity]
-      # @return [Array<String>]
+      # @return [Array<Mention>]
       def find_mentions(entity)
-        mentions = entity.aliases.map { |entity_alias| find_alias_mentions(entity_alias) }.flatten
-        mentions.group_by(&:from).values.map do |intersections|
-          intersections.max_by { |m| m.match.length }
-        end.sort_by(&:from)
+        mentions = find_entity_mentions(entity)
+        filter_instersections_by_length(mentions).sort_by(&:from)
       end
 
       private
 
-      attr_reader :text, :symbols_config, :mentions
+      attr_reader :text, :symbols_config
+
+      # @param [Entity]
+      # @return [Array<Mention>]
+      def find_entity_mentions(entity)
+        entity.aliases.map { |entity_alias| find_alias_mentions(entity_alias) }.flatten
+      end
 
       # @param entity_alias [String]
       # @return [Array<Mention>]
@@ -35,6 +39,12 @@ module MentionsSearch
       # @return [Mention]
       def build_mention(from:, to:, entity_alias:)
         Mention.new(from: from, to: to, match: text[from..to], entity_alias: entity_alias)
+      end
+
+      def filter_instersections_by_length(mentions)
+        mentions.group_by(&:from).values.map do |intersections|
+          intersections.max_by { |m| m.match.length }
+        end
       end
     end
   end
