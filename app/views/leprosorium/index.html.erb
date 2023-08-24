@@ -1,0 +1,18 @@
+<h2>Markup your text!</h2>
+
+<%= form_with url: markup_path do |f| %>
+  <%= f.label :text %>
+  <br>
+  <%= f.text_area :text, size: "80x7", value: @text || default_text_value %>
+  <br>
+  <%= f.label :result %>
+  <br>
+  <%= f.text_area :result, size: "80x7", value: @result %>
+  <br>
+  <%= f.label :leprosorium %>
+  <br>
+  <%= f.text_area :leprosorium, size: "80x30", value: dummy_leprosorium, disabled: true %>
+  <br>
+  <%= f.submit "Markup" %>
+  <br>
+<% end %>
