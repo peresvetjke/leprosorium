@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require File.expand_path('app/models/leprosorium')
+
 # Dummy leprosorium config.
 unless Rails.env.test?
   entities = [
